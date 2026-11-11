@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Painel de Indicadores — Plano Estratégico de Desenvolvimento do Amazonas</title>
+<style>
+:root{
+  --bg:#f4f3f0; --surface:#fcfcfb; --line:#e3e1dc; --line-soft:#eeece8;
+  --ink:#0b0b0b; --ink-2:#52514e; --ink-3:#77756f;
+  --accent:#2a78d6; --accent-soft:#cde2fb; --bar:#2a78d6; --bar-empty:#e3e1dc;
+  --chip:#eeece8; --warn:#fab219;
+}
+@media (prefers-color-scheme:dark){:root{
+  --bg:#121211; --surface:#1a1a19; --line:#33332f; --line-soft:#262624;
+  --ink:#f0efec; --ink-2:#c3c2b7; --ink-3:#97958d;
+  --accent:#3987e5; --accent-soft:#184f95; --bar:#3987e5; --bar-empty:#383835; --chip:#262624;
+}}
+*{box-sizing:border-box}
+body{margin:0;font:14px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--ink)}
+header{padding:20px 28px 12px}
+h1{font-size:20px;margin:0 0 2px}
+.sub{color:var(--ink-2);font-size:13px}
+.tiles{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px;padding:8px 28px 16px}
+.tile{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px 14px}
+.tile .v{font-size:26px;font-weight:650;font-variant-numeric:tabular-nums}
+.tile .l{color:var(--ink-2);font-size:12px}
+.filters{display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:0 28px 14px}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:var(--surface)}
+.seg button{border:0;background:none;padding:7px 12px;font:inherit;color:var(--ink-2);cursor:pointer}
+.seg button[aria-pressed=true]{background:var(--accent);color:#fff}
+input[type=search]{flex:1;min-width:220px;max-width:420px;padding:7px 10px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--ink);font:inherit}
+label.chk{color:var(--ink-2);display:flex;gap:6px;align-items:center}
+.btn{border:1px solid var(--line);background:var(--surface);color:var(--ink);padding:7px 12px;border-radius:8px;font:inherit;cursor:pointer}
+.btn:hover,.seg button:hover{border-color:var(--accent)}
+main{display:grid;grid-template-columns:330px 1fr;gap:16px;padding:0 28px 28px;align-items:start}
+nav{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:8px 0;position:sticky;top:12px;max-height:calc(100vh - 24px);overflow:auto}
+nav h3{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-3);margin:12px 14px 4px}
+nav button{display:grid;grid-template-columns:1fr auto;gap:2px 8px;width:100%;text-align:left;border:0;background:none;padding:7px 14px;font:inherit;color:var(--ink);cursor:pointer}
+nav button:hover{background:var(--line-soft)}
+nav button[aria-current=true]{background:var(--accent-soft)}
+nav .n{font-variant-numeric:tabular-nums;color:var(--ink-2)}
+nav .bar{grid-column:1/3;height:4px;background:var(--bar-empty);border-radius:2px;overflow:hidden}
+nav .bar i{display:block;height:100%;background:var(--bar);border-radius:2px}
+nav .zero{color:var(--ink-3);font-style:italic}
+section.panel{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:18px 20px;min-width:0}
+.panel h2{margin:0;font-size:18px}
+.meta-line{color:var(--ink-2);font-size:13px;margin:2px 0 10px}
+.nota{border-left:3px solid var(--line);padding:4px 10px;color:var(--ink-2);margin:6px 0}
+.nota.alerta{border-color:var(--warn)}
+table{border-collapse:collapse;width:100%;font-size:13px}
+th{text-align:left;font-weight:600;color:var(--ink-2);border-bottom:1px solid var(--line);padding:6px 8px;position:sticky;top:0;background:var(--surface)}
+td{border-bottom:1px solid var(--line-soft);padding:6px 8px;vertical-align:top}
+td.id{color:var(--ink-3);font-variant-numeric:tabular-nums;white-space:nowrap;font-size:12px}
+tr.grupo td{background:var(--line-soft);font-weight:600;color:var(--ink-2);font-size:12px}
+.chip{display:inline-block;padding:1px 8px;border-radius:10px;background:var(--chip);color:var(--ink-2);font-size:12px;white-space:nowrap}
+.vazio{color:var(--ink-3)}
+.overview .row{display:grid;grid-template-columns:260px 1fr 46px;gap:10px;align-items:center;padding:3px 0;cursor:pointer;border-radius:4px}
+.overview .row:hover{background:var(--line-soft)}
+.overview .row .bar{height:14px;background:transparent;position:relative}
+.overview .row .bar i{position:absolute;left:0;top:0;bottom:0;background:var(--bar);border-radius:0 4px 4px 0}
+.overview .row .n{text-align:right;font-variant-numeric:tabular-nums;color:var(--ink-2)}
+.overview h3{font-size:13px;color:var(--ink-2);margin:16px 0 4px}
+.tabs{display:flex;gap:4px;padding:0 28px;border-bottom:1px solid var(--line);margin-bottom:14px}
+.tabs button{border:0;background:none;padding:9px 14px;font:inherit;color:var(--ink-2);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px}
+.tabs button[aria-selected=true]{color:var(--ink);border-color:var(--accent);font-weight:600}
+tbody tr.ind{cursor:pointer}
+tbody tr.ind:hover td{background:var(--line-soft)}
+nav button.it{display:block;font-size:13px;padding:5px 14px 5px 22px}
+nav button.it small{color:var(--ink-3);margin-right:6px;font-variant-numeric:tabular-nums}
+.ficha .kv{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:12px 0 18px}
+.ficha .kv div{border:1px solid var(--line);border-radius:8px;padding:8px 10px}
+.ficha .kv b{display:block;font-size:11px;color:var(--ink-3);font-weight:600;text-transform:uppercase;letter-spacing:.04em}
+.ficha h3{font-size:14px;margin:18px 0 6px}
+.fonte{border:1px solid var(--line);border-radius:8px;padding:10px 12px;margin:8px 0}
+.fonte .cab{display:flex;gap:8px;align-items:center;font-size:12px;color:var(--ink-2);margin-bottom:4px;flex-wrap:wrap}
+.fonte .cab a{color:var(--accent);margin-left:auto}
+.fonte p{margin:0;line-height:1.55}
+mark{background:var(--accent-soft);color:inherit;border-radius:2px;padding:0 1px}
+.aviso{font-size:12px;color:var(--ink-3);margin-top:14px}
+.navgo{display:flex;gap:8px;margin-bottom:6px}
+.btn:disabled{opacity:.4;cursor:default}
+#tip{position:fixed;pointer-events:none;background:var(--ink);color:var(--surface);padding:6px 9px;border-radius:6px;font-size:12px;display:none;z-index:9}
+@media (max-width:900px){main{grid-template-columns:1fr}nav{position:static;max-height:none}.tiles{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
+<body>
+<header>
+  <h1>Painel de Indicadores — Plano Estratégico de Desenvolvimento do Amazonas</h1>
+  <div class="sub">Indicadores de monitoramento dos Eixos 01, 02 e 03, extraídos dos e-books do plano (2026). Valores atuais ainda não alimentados. <a href="plataforma.html">Abrir a plataforma de monitoramento →</a></div>
+</header>
+
+<div class="tabs" role="tablist">
+  <button role="tab" data-v="painel" aria-selected="true">Painel</button>
+  <button role="tab" data-v="fichas" aria-selected="false">Fichas dos indicadores</button>
+</div>
+<div class="tiles" id="tiles"></div>
+
+<div class="filters">
+  <div class="seg" id="seg" role="group" aria-label="Filtrar por eixo"></div>
+  <input type="search" id="busca" placeholder="Buscar indicador, grupo, responsável…" aria-label="Buscar">
+  <label class="chk"><input type="checkbox" id="soMeta"> só com meta/prazo</label>
+  <button class="btn" id="csv">Exportar CSV</button>
+</div>
+
+<main>
+  <nav id="nav" aria-label="Áreas"></nav>
+  <section class="panel" id="panel"></section>
+</main>
+<div id="tip" role="tooltip"></div>
+
+<script src="dados.js"></script>
+<script>
+const D = window.DADOS;
+const st = { view: "painel", eixo: "", area: "", q: "", soMeta: false, ind: "" };
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const norm = s => String(s).normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
+
+function filtrados() {
+  const q = norm(st.q);
+  return D.indicadores.filter(i =>
+    (!st.eixo || i.eixo === st.eixo) &&
+    (!st.soMeta || i.meta || i.prazo) &&
+    (!q || norm([i.indicador, i.grupo, i.area, i.responsavel, i.meta, i.id].join(" ")).includes(q)));
+}
+
+function tiles(lista) {
+  const t = [
+    [lista.length, "indicadores"],
+    [new Set(lista.map(i => i.area_id)).size, "áreas com indicadores"],
+    [lista.filter(i => i.meta || i.prazo).length, "com meta ou prazo"],
+    [lista.filter(i => i.base).length, "com linha de base"],
+    [lista.filter(i => i.valor_atual).length + " / " + lista.length, "alimentados"],
+  ];
+  $("tiles").innerHTML = t.map(([v, l]) => `<div class="tile"><div class="v">${v}</div><div class="l">${l}</div></div>`).join("");
+}
+
+function seg() {
+  const ops = [["", "Todos"], ...D.eixos.map(e => [e.id, e.nome])];
+  $("seg").innerHTML = ops.map(([id, n]) => `<button data-e="${id}" aria-pressed="${st.eixo === id}">${n}</button>`).join("");
+}
+
+function nav(lista) {
+  const cont = {};
+  lista.forEach(i => cont[i.area_id] = (cont[i.area_id] || 0) + 1);
+  const max = Math.max(1, ...Object.values(cont));
+  let h = `<button data-a="" aria-current="${!st.area}"><span>Visão geral</span><span class="n">${lista.length}</span></button>`;
+  D.eixos.filter(e => !st.eixo || e.id === st.eixo).forEach(e => {
+    h += `<h3>${esc(e.nome)} — ${esc(e.titulo)}</h3>`;
+    D.areas.filter(a => a.eixo === e.id).forEach(a => {
+      const n = cont[a.id] || 0;
+      h += `<button data-a="${a.id}" aria-current="${st.area === a.id}">
+        <span class="${n ? "" : "zero"}">${esc(a.nome)}</span><span class="n">${n}</span>
+        <span class="bar"><i style="width:${n / max * 100}%"></i></span></button>`;
+    });
+  });
+  $("nav").innerHTML = h;
+}
+
+function overview(lista) {
+  const cont = {};
+  lista.forEach(i => cont[i.area_id] = (cont[i.area_id] || 0) + 1);
+  const max = Math.max(1, ...Object.values(cont));
+  let h = `<div class="overview"><h2>Indicadores por área</h2>
+    <div class="meta-line">Clique numa área para ver a lista. Áreas zeradas não têm indicadores no plano ou não batem com o filtro.</div>`;
+  D.eixos.filter(e => !st.eixo || e.id === st.eixo).forEach(e => {
+    h += `<h3>${esc(e.nome)} — ${esc(e.titulo)}</h3>`;
+    D.areas.filter(a => a.eixo === e.id).forEach(a => {
+      const sub = lista.filter(i => i.area_id === a.id), n = sub.length;
+      const comMeta = sub.filter(i => i.meta || i.prazo).length;
+      h += `<div class="row" data-a="${a.id}" data-tip="${esc(a.nome)}: ${n} indicadores · ${comMeta} com meta/prazo · ${sub.filter(i => i.base).length} com linha de base">
+        <span>${esc(a.nome)}</span><span class="bar"><i style="width:${n / max * 100}%"></i></span><span class="n">${n}</span></div>`;
+    });
+  });
+  return h + "</div>";
+}
+
+function detalhe(a, lista) {
+  const sub = lista.filter(i => i.area_id === a.id);
+  const e = D.eixos.find(x => x.id === a.eixo);
+  let h = `<h2>${esc(a.nome)}</h2><div class="meta-line">${esc(e.nome)} — ${esc(e.titulo)}${a.paginas ? " · " + esc(a.paginas) : ""} · ${sub.length} indicadores</div>`;
+  a.notas.forEach(n => h += `<div class="nota ${/inconsist/i.test(n) ? "alerta" : ""}">${esc(n)}</div>`);
+  if (!sub.length) return h + `<p class="vazio">Nenhum indicador ${D.indicadores.some(i => i.area_id === a.id) ? "com os filtros atuais" : "definido no plano para esta área"}.</p>`;
+  h += `<table><thead><tr><th>ID</th><th>Indicador</th><th>Linha de base</th><th>Meta</th><th>Prazo</th><th>Responsável</th><th>Valor atual</th><th>Status</th></tr></thead><tbody>`;
+  let g = null;
+  sub.forEach(i => {
+    if (i.grupo !== g) { g = i.grupo; if (g) h += `<tr class="grupo"><td colspan="8">${esc(g)}</td></tr>`; }
+    const v = i.valor_atual ? esc(i.valor_atual) + (i.data_referencia ? ` <span class="vazio">(${esc(i.data_referencia)})</span>` : "") : `<span class="vazio">—</span>`;
+    h += `<tr class="ind" data-i="${i.id}" title="Ver ficha"><td class="id">${esc(i.id)}</td><td>${esc(i.indicador)}</td><td>${esc(i.base) || '<span class="vazio">—</span>'}</td>
+      <td>${esc(i.meta) || '<span class="vazio">—</span>'}</td><td>${esc(i.prazo) || '<span class="vazio">—</span>'}</td>
+      <td>${esc(i.responsavel) || '<span class="vazio">—</span>'}</td><td>${v}</td>
+      <td><span class="chip">${i.valor_atual ? "Alimentado" : "Sem dado"}</span></td></tr>`;
+  });
+  return h + "</tbody></table>";
+}
+
+const STOP = new Set("para pelo pela pelos pelas como entre sobre numero total taxa indice anual com sem dos das nos nas que uma por de da do em e o a os as no na meta ano mes dia via sua seu".split(" "));
+const raizes = s => (norm(s).match(/[a-z0-9]+/g) || []).filter(w => (w.length >= 3 || /^\d+$/.test(w)) && !STOP.has(w)).map(w => w.slice(0, 6));
+function destaca(txt, ind) {
+  const tk = new Set(raizes(ind.indicador));
+  return esc(txt).replace(/[\p{L}\p{N}]+/gu, w => { const n = norm(w); return n.length >= 3 && tk.has(n.slice(0, 6)) ? `<mark>${w}</mark>` : w; });
+}
+
+function navFichas(lista) {
+  let h = "", area = null;
+  lista.forEach(i => {
+    if (i.area_id !== area) { area = i.area_id; h += `<h3>${esc(D.eixos.find(e => e.id === i.eixo).nome)} · ${esc(i.area)}</h3>`; }
+    h += `<button class="it" data-i="${i.id}" aria-current="${st.ind === i.id}"><small>${esc(i.id.split("-").pop())}</small>${esc(i.indicador)}</button>`;
+  });
+  $("nav").innerHTML = h || `<p class="vazio" style="padding:0 14px">Nenhum indicador com esses filtros.</p>`;
+}
+
+function ficha(i, lista) {
+  if (!i) return `<h2>Fichas dos indicadores</h2><div class="meta-line">Escolha um indicador na lista à esquerda (ou clique numa linha da tabela no Painel) para ver o que o plano diz sobre ele.</div>`;
+  const a = D.areas.find(x => x.id === i.area_id), e = D.eixos.find(x => x.id === i.eixo);
+  const k = lista.findIndex(x => x.id === i.id);
+  const ant = k > 0 ? lista[k - 1] : null, prox = k >= 0 ? lista[k + 1] : null;
+  const pdf = p => `../${encodeURI(e.pdf)}#page=${p}`;
+  const campo = (n, v) => `<div><b>${n}</b>${v ? esc(v) : '<span class="vazio">—</span>'}</div>`;
+  let h = `<div class="ficha"><div class="navgo">
+      <button class="btn" data-go="${ant ? ant.id : ""}" ${ant ? "" : "disabled"}>← anterior</button>
+      <button class="btn" data-go="${prox ? prox.id : ""}" ${prox ? "" : "disabled"}>próximo →</button>
+      <button class="btn" data-area="${a.id}">ver área no painel</button></div>
+    <h2>${esc(i.indicador)}</h2>
+    <div class="meta-line">${esc(i.id)} · ${esc(e.nome)} — ${esc(e.titulo)} · ${esc(a.nome)}${i.grupo ? " · " + esc(i.grupo) : ""}</div>
+    <div class="kv">${campo("Linha de base", i.base)}${campo("Meta", i.meta)}${campo("Prazo", i.prazo)}${campo("Responsável", i.responsavel)}${campo("Valor atual", i.valor_atual)}</div>
+    <h3>O que o plano diz sobre este indicador</h3>`;
+  if (i.fontes.length) i.fontes.forEach((f, n) => {
+    h += `<div class="fonte"><div class="cab"><span class="chip">${n ? "Outro trecho" : "Trecho principal"}</span>
+      <span>p. ${f.pagina}</span><a href="${pdf(f.pagina)}" target="_blank" rel="noopener">abrir PDF nesta página ↗</a></div>
+      <p>${destaca(f.trecho, i)}</p></div>`;
+  });
+  else h += `<p class="vazio">Trecho não localizado automaticamente. Ver o capítulo da área: <a href="${pdf(a.capitulo[0])}" target="_blank" rel="noopener">p. ${a.capitulo[0]}–${a.capitulo[1]} ↗</a></p>`;
+  if (a.notas.length) h += `<h3>Notas da área</h3>` + a.notas.map(n => `<div class="nota ${/inconsist/i.test(n) ? "alerta" : ""}">${esc(n)}</div>`).join("");
+  return h + `<p class="aviso">Trechos localizados automaticamente no capítulo “${esc(a.nome)}” (p. ${a.capitulo[0]}–${a.capitulo[1]} do PDF do ${esc(e.nome)}). Confira no PDF antes de citar.</p></div>`;
+}
+
+function render() {
+  const lista = filtrados();
+  document.querySelectorAll(".tabs button").forEach(b => b.setAttribute("aria-selected", b.dataset.v === st.view));
+  tiles(lista); seg();
+  if (st.view === "fichas") {
+    navFichas(lista);
+    $("panel").innerHTML = ficha(D.indicadores.find(x => x.id === st.ind), lista);
+    const cur = $("nav").querySelector('[aria-current="true"]');
+    if (cur) { const n = $("nav"); if (cur.offsetTop < n.scrollTop || cur.offsetTop > n.scrollTop + n.clientHeight - 40) n.scrollTop = cur.offsetTop - n.clientHeight / 3; }
+    return;
+  }
+  nav(lista);
+  const a = D.areas.find(x => x.id === st.area);
+  $("panel").innerHTML = a ? detalhe(a, lista) : overview(lista);
+}
+const abreFicha = id => { st.view = "fichas"; st.ind = id; render(); window.scrollTo({ top: 0 }); };
+document.querySelector(".tabs").onclick = ev => { const b = ev.target.closest("button"); if (b) { st.view = b.dataset.v; render(); } };
+
+$("seg").onclick = ev => { const b = ev.target.closest("button"); if (!b) return; st.eixo = b.dataset.e; if (st.area && !st.area.startsWith(st.eixo)) st.area = ""; render(); };
+$("nav").onclick = ev => {
+  const b = ev.target.closest("button"); if (!b) return;
+  if (b.dataset.i) st.ind = b.dataset.i; else st.area = b.dataset.a;
+  render();
+};
+$("panel").onclick = ev => {
+  const r = ev.target.closest(".row"); if (r) { st.area = r.dataset.a; $("tip").style.display = "none"; render(); return; }
+  const t = ev.target.closest("tr.ind"); if (t) { abreFicha(t.dataset.i); return; }
+  const g = ev.target.closest("[data-go]"); if (g && g.dataset.go) { abreFicha(g.dataset.go); return; }
+  const ar = ev.target.closest("[data-area]"); if (ar) { st.view = "painel"; st.area = ar.dataset.area; render(); }
+};
+$("busca").oninput = ev => { st.q = ev.target.value; render(); };
+$("soMeta").onchange = ev => { st.soMeta = ev.target.checked; render(); };
+
+const tip = $("tip");
+$("panel").addEventListener("mousemove", ev => {
+  const r = ev.target.closest("[data-tip]");
+  if (!r) { tip.style.display = "none"; return; }
+  tip.textContent = r.dataset.tip; tip.style.display = "block";
+  tip.style.left = Math.min(ev.clientX + 12, innerWidth - tip.offsetWidth - 8) + "px"; tip.style.top = ev.clientY + 14 + "px";
+});
+$("panel").addEventListener("mouseleave", () => tip.style.display = "none");
+
+$("csv").onclick = () => {
+  const cols = ["id", "eixo", "area", "grupo", "indicador", "base", "meta", "prazo", "responsavel", "valor_atual", "data_referencia", "fonte_dado", "observacao"];
+  const cel = v => `"${String(v ?? "").replace(/"/g, '""')}"`;
+  const txt = "﻿" + [cols.join(";"), ...filtrados().map(i => cols.map(c => cel(i[c])).join(";"))].join("\r\n");
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob([txt], { type: "text/csv;charset=utf-8" }));
+  a.download = "indicadores_filtrados.csv"; a.click();
+};
+
+render();
+</script>
+</body>
+</html>

@@ -1,0 +1,3 @@
+# PDFs dos e-books (>100 MB, limite do GitHub); baixar do site omargovernador.com.br
+*.pdf
+__pycache__/
