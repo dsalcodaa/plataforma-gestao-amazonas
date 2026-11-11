@@ -11,7 +11,7 @@ Análise dos e-books públicos "Plano Estratégico de Desenvolvimento do Amazona
 3. Listar todos os indicadores de monitoramento dos 3 eixos por área — **concluído**.
 4. Salvar MD da conversa — este arquivo.
 
-## Arquivos (pasta `C:\Users\pedro.paiva\Downloads\Omar_Eixos\`)
+## Arquivos (raiz deste repositório)
 | Arquivo | Conteúdo |
 |---|---|
 | `EBOOK-LIVRO-OMAR-Plano-estrategico-de-desenvolvimento-Eixo01.pdf` | Eixo 01, 633 p., 112 MB |
